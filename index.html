@@ -60,25 +60,32 @@
             try {
                 const response = await fetch(`data/troubleshooting/${selectedTrain}.md`);
                 if (!response.ok) throw new Error('尚未建立該車種的資料檔案 (.md)');
-                const text = await response.text();
+                let text = await response.text();
 
-                const sections = text.split('### ');
-                const targetSection = sections.find(s => s.startsWith(category));
+                // 修正後的強力解析邏輯：根據 ### 分割區塊
+                const sections = text.split(/(?=###\s+)/);
+                // 尋找包含目標分類（如 door）的區塊
+                const targetSection = sections.find(s => s.toLowerCase().includes(`### ${category.toLowerCase()}`));
 
                 if (!targetSection) {
                     listContainer.innerHTML = "<div class='fault-item'>此分類目前尚無資料，等妳來補充！</div>";
                     return;
                 }
 
-                const items = targetSection.replace(category, '').trim().split('#### ');
+                // 根據 #### 分割該分類下的各個故障項目
+                const items = targetSection.split(/(?=####\s+)/).slice(1); // 略過第一個大標題
                 let htmlContent = '';
 
                 items.forEach(item => {
-                    if (!item.trim()) return;
-                    const lines = item.split('\n');
+                    // 清理文字
+                    const cleanItem = item.replace(/####\s+/, '').trim();
+                    if (!cleanItem) return;
+
+                    const lines = cleanItem.split('\n');
                     let rawTitle = lines[0].trim();
                     const steps = lines.slice(1).join('\n').trim();
 
+                    // 解析【次級分類】標籤
                     let subCatTag = '';
                     const match = rawTitle.match(/(【.*?】)/);
                     if (match) {
