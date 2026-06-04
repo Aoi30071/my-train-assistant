@@ -62,35 +62,44 @@
                 if (!response.ok) throw new Error('尚未建立該車種的資料檔案 (.md)');
                 let text = await response.text();
 
-                // 修正後的強力解析邏輯：根據 ### 分割區塊
-                const sections = text.split(/(?=###\s+)/);
-                // 尋找包含目標分類（如 door）的區塊
-                const targetSection = sections.find(s => s.toLowerCase().includes(`### ${category.toLowerCase()}`));
+                // 移除惱人的 Windows 換行符號 (\r)，統一換成 \n
+                text = text.replace(/\r/g, '');
 
-                if (!targetSection) {
+                // 尋找目標分類的位置 (例如 ### door)
+                const categoryRegex = new RegExp(`###\\s+${category}\\b`, 'i');
+                const matchIndex = text.search(categoryRegex);
+
+                if (matchIndex === -1) {
                     listContainer.innerHTML = "<div class='fault-item'>此分類目前尚無資料，等妳來補充！</div>";
                     return;
                 }
 
-                // 根據 #### 分割該分類下的各個故障項目
-                const items = targetSection.split(/(?=####\s+)/).slice(1); // 略過第一個大標題
+                // 擷取從目前的分類到下一個 ### 之間的全部文字
+                let targetText = text.substring(matchIndex);
+                const nextSectionIndex = targetText.indexOf('###', 4);
+                if (nextSectionIndex !== -1) {
+                    targetText = targetText.substring(0, nextSectionIndex);
+                }
+
+                // 根據 #### 拆分故障項目
+                const items = targetText.split('####');
                 let htmlContent = '';
 
-                items.forEach(item => {
-                    // 清理文字
-                    const cleanItem = item.replace(/####\s+/, '').trim();
-                    if (!cleanItem) return;
+                // 略過第 0 個（那是大分類標題 ### door 本身）
+                for (let i = 1; i < items.length; i++) {
+                    const itemText = items[i].trim();
+                    if (!itemText) continue;
 
-                    const lines = cleanItem.split('\n');
+                    const lines = itemText.split('\n');
                     let rawTitle = lines[0].trim();
                     const steps = lines.slice(1).join('\n').trim();
 
                     // 解析【次級分類】標籤
                     let subCatTag = '';
-                    const match = rawTitle.match(/(【.*?】)/);
-                    if (match) {
-                        subCatTag = `<span class="sub-cat-tag">${match[1]}</span>`;
-                        rawTitle = rawTitle.replace(match[1], '').replace('⚠️', '').trim();
+                    const tagMatch = rawTitle.match(/(【.*?】)/);
+                    if (tagMatch) {
+                        subCatTag = `<span class="sub-cat-tag">${tagMatch[1]}</span>`;
+                        rawTitle = rawTitle.replace(tagMatch[1], '').replace('⚠️', '').trim();
                     }
 
                     htmlContent += `
@@ -99,12 +108,12 @@
                             <div class='fault-title'>⚠️ ${rawTitle}</div>
                             <div class='fault-steps'>${steps}</div>
                         </div>`;
-                });
+                }
 
                 listContainer.innerHTML = htmlContent || "<div class='fault-item'>此分類目前尚無資料。</div>";
 
             } catch (error) {
-                listContainer.innerHTML = `<div class='fault-item'>讀取失敗: ${error.message}<br><small>提示：請確認 data/troubleshooting/ 目錄下是否有建立 ${selectedTrain}.md 檔案</small></div>`;
+                listContainer.innerHTML = `<div class='fault-item'>讀取失敗: ${error.message}</div>`;
             }
         }
     </script>
