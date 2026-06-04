@@ -1,0 +1,102 @@
+:root { 
+    --primary-color: #0056b3; 
+    --bg-color: #f4f6f9; 
+    --card-bg: #ffffff; 
+    --tag-bg: #e9ecef;
+    --tag-text: #495057;
+}
+
+body { 
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+    background-color: var(--bg-color); 
+    padding: 15px; 
+    margin: 0; 
+}
+
+header { 
+    text-align: center; 
+    padding: 10px; 
+    background: var(--primary-color); 
+    color: white; 
+    border-radius: 8px; 
+    margin-bottom: 15px; 
+}
+
+.section-title { 
+    font-size: 18px; 
+    font-weight: bold; 
+    margin: 20px 0 10px 5px; 
+    color: #222; 
+}
+
+.grid-container { 
+    display: grid; 
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 10px; 
+}
+
+.btn { 
+    background: var(--card-bg); 
+    border: 1px solid #e0e0e0; 
+    border-radius: 8px; 
+    padding: 15px 10px; 
+    text-align: center; 
+    font-size: 16px; 
+    font-weight: bold; 
+    cursor: pointer; 
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
+    transition: all 0.2s; 
+}
+
+.btn:active { 
+    background: #e9ecef; 
+}
+
+.btn.active { 
+    background: var(--primary-color); 
+    color: white; 
+    border-color: var(--primary-color); 
+}
+
+.full-width { 
+    grid-column: span 2; 
+}
+
+.fault-item { 
+    background: var(--card-bg); 
+    padding: 15px; 
+    border-radius: 8px; 
+    margin-bottom: 12px; 
+    border-left: 5px solid var(--primary-color); 
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
+}
+
+.sub-cat-tag { 
+    display: inline-block; 
+    background-color: var(--tag-bg); 
+    color: var(--tag-text); 
+    font-size: 12px; 
+    font-weight: bold; 
+    padding: 3px 8px; 
+    border-radius: 4px; 
+    margin-bottom: 6px; 
+}
+
+.fault-title { 
+    font-weight: bold; 
+    font-size: 16px; 
+    margin-bottom: 8px; 
+    color: #111; 
+    line-height: 1.4; 
+}
+
+.fault-steps { 
+    font-size: 14px; 
+    color: #444; 
+    white-space: pre-line; 
+    line-height: 1.6; 
+}
+
+.hidden { 
+    display: none; 
+}
