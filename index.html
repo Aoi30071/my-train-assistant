@@ -25,9 +25,14 @@
 
     <div class="section-title">1. 選擇車種</div>
     <div class="grid-container" id="trainSelector">
+        <div class="btn" onclick="selectTrain('emu500', this)">EMU500</div>
+        <div class="btn" onclick="selectTrain('emu700', this)">EMU700</div>
+        <div class="btn" onclick="selectTrain('emu800', this)">EMU800</div>
         <div class="btn" onclick="selectTrain('emu900', this)">EMU900</div>
+        <div class="btn" onclick="selectTrain('temu1000', this)">TEMU1000 (太魯閣)</div>
+        <div class="btn" onclick="selectTrain('temu2000', this)">TEMU2000 (普悠瑪)</div>
         <div class="btn" onclick="selectTrain('emu3000', this)">EMU3000</div>
-        <div class="btn" onclick="selectTrain('pp_train', this)">PP 自強號</div>
+        <div class="btn" onclick="selectTrain('dr1000', this)">DR1000</div>
     </div>
 
     <div id="categorySection" class="hidden">
@@ -37,7 +42,7 @@
             <div class="btn" onclick="loadFaults('hvac', this)">❄️ 空調與照明</div>
             <div class="btn" onclick="loadFaults('water', this)">🚻 給水與衛生</div>
             <div class="btn" onclick="loadFaults('pids', this)">📢 資訊與廣播</div>
-            <div class="btn full-width" onclick="loadFaults('brake', this)">⚡ 動力與聯輔助</div>
+            <div class="btn full-width" onclick="loadFaults('brake', this)">⚡ 動力與軔機輔助</div>
         </div>
     </div>
 
@@ -67,14 +72,14 @@
 
             try {
                 const response = await fetch(`data/troubleshooting/${selectedTrain}.md`);
-                if (!response.ok) throw new Error('找不到該車種的資料檔案');
+                if (!response.ok) throw new Error('尚未建立該車種的資料檔案 (.md)');
                 const text = await response.text();
 
                 const sections = text.split('### ');
                 const targetSection = sections.find(s => s.startsWith(category));
 
                 if (!targetSection) {
-                    listContainer.innerHTML = "<div class='fault-item'>此分類目前尚無資料。</div>";
+                    listContainer.innerHTML = "<div class='fault-item'>此分類目前尚無資料，等妳來補充！</div>";
                     return;
                 }
 
@@ -92,7 +97,7 @@
                 listContainer.innerHTML = htmlContent || "<div class='fault-item'>此分類目前尚無資料。</div>";
 
             } catch (error) {
-                listContainer.innerHTML = `<div class='fault-item'>讀取失敗: ${error.message}</div>`;
+                listContainer.innerHTML = `<div class='fault-item'>讀取失敗: ${error.message}<br><small>提示：請確認 data/troubleshooting/ 目錄下是否有建立 ${selectedTrain}.md 檔案</small></div>`;
             }
         }
     </script>
